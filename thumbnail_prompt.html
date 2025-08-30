@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Squid Media - Thumbnail Prompt Generator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+/* Body & Background */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0b0c1a, #1a0f3e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+/* Glassmorphic container */
+.container {
+    background: rgba(30, 20, 60, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 40px 50px;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 80px rgba(255,51,102,0.4);
+}
+
+/* Headings */
+h1 {
+    font-size: 3rem;
+    color: #FF3366;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+}
+h1 a {
+    color: #ffffff; /* always white */
+    text-decoration: none; /* underline removed */
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+h1 a:hover {
+    transform: scale(1.1) rotate(-1deg); /* subtle grow + tilt animation */
+}
+h1 a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 3px;
+    left: 0;
+    bottom: -5px;
+    background: linear-gradient(90deg, #FF3366, #FF1A55);
+    transition: width 0.4s ease;
+    border-radius: 3px;
+}
+h1 a:hover::after {
+    width: 100%;
+}
+
+h2 {
+    font-size: 1.3rem;
+    color: #FFD700;
+    margin-bottom: 30px;
+}
+
+/* Inputs and Button */
+input, textarea, button {
+    width: 100%;
+    padding: 16px 18px;
+    margin: 14px 0;
+    border-radius: 14px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* Inputs and textarea styling */
+input, textarea {
+    background-color: rgba(50, 35, 90, 0.85);
+    color: #fff;
+}
+input::placeholder, textarea::placeholder {
+    color: #ccc;
+}
+input:focus, textarea:focus {
+    box-shadow: 0 0 12px #FF3366;
+    border: 1px solid #FF3366;
+}
+
+/* Button */
+button {
+    background: linear-gradient(90deg, #FF3366, #FF1A55);
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+button:hover {
+    background: linear-gradient(90deg, #FF1A55, #FF3366);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,51,102,0.5);
+}
+
+/* Textarea */
+textarea {
+    height: 450px;
+    resize: none;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    background-color: rgba(40,25,80,0.85);
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+/* Footer */
+footer {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #FFD700;
+    letter-spacing: 0.5px;
+}
+footer a {
+    color: #FFD700;
+    text-decoration: none;
+}
+footer a:hover {
+    text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1><a href="https://squidmedia.co/" target="_blank">Squid Media</a></h1>
+    <h2>Instagram Thumbnail Prompt Generator</h2>
+    <input type="text" id="title" placeholder="Enter your video title (optional info in brackets)">
+    <button id="generate">Generate Prompt</button>
+    <textarea id="result" readonly placeholder="Generated prompt will appear here"></textarea>
+    <footer>© 2025 <a href="https://squidmedia.co/" target="_blank">Squid Media</a></footer>
+</div>
+
+<script>
+function generatePrompt() {
+    let rawTitle = document.getElementById('title').value.trim();
+    if (!rawTitle) return;
+
+    // Extract bracket content as Additional Information
+    let bracketInfos = [];
+    let bracketRegex = /\((.*?)\)/g;
+    let match;
+    while (match = bracketRegex.exec(rawTitle)) bracketInfos.push(match[1].trim());
+
+    let mainTitle = rawTitle.replace(/\(.*?\)/g,'').trim();
+    let titleCaps = mainTitle.toUpperCase();
+
+    let additionalInfoText = bracketInfos.length ? bracketInfos.join(", ") : "None";
+    let elementsText = `Minimal but premium-looking icons/graphics automatically related to the topic "${titleCaps}"`;
+
+    // Formatted prompt
+    let promptText = `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n` +
+                     `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n\n` +
+                     `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n\n` +
+                     `== ELEMENTS ==\n${elementsText}, arranged in the background (not covering the subject).\n\n` +
+                     `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n` +
+                     `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n` +
+                     `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, title directly above head, supportive elements in the background.\n\n` +
+                     `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n` +
+                     `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
+
+    document.getElementById('result').value = promptText;
+}
+
+// Generate on button click
+document.getElementById('generate').addEventListener('click', generatePrompt);
+
+// Generate on Enter key
+document.getElementById('title').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        generatePrompt();
+    }
+});
+</script>
+</body>
+</html>
