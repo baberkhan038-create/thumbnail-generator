@@ -39,33 +39,18 @@ body {
 /* Headings */
 h1 {
     font-size: 3rem;
-    color: #FF3366;
+    color: #ffffff;
     letter-spacing: 1.5px;
     margin-bottom: 5px;
 }
 h1 a {
-    color: #ffffff; /* always white */
-    text-decoration: none; /* underline removed */
+    color: #ffffff;
+    text-decoration: none; /* remove underline */
     display: inline-block;
     transition: transform 0.3s ease;
 }
-
 h1 a:hover {
-    transform: scale(1.1) rotate(-1deg); /* subtle grow + tilt animation */
-}
-h1 a::after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 3px;
-    left: 0;
-    bottom: -5px;
-    background: linear-gradient(90deg, #FF3366, #FF1A55);
-    transition: width 0.4s ease;
-    border-radius: 3px;
-}
-h1 a:hover::after {
-    width: 100%;
+    transform: scale(1.1) rotate(-1deg); /* subtle animation */
 }
 
 h2 {
@@ -74,7 +59,7 @@ h2 {
     margin-bottom: 30px;
 }
 
-/* Inputs and Button */
+/* Inputs and Buttons */
 input, textarea, button {
     width: 100%;
     padding: 16px 18px;
@@ -100,7 +85,7 @@ input:focus, textarea:focus {
     border: 1px solid #FF3366;
 }
 
-/* Button */
+/* Buttons */
 button {
     background: linear-gradient(90deg, #FF3366, #FF1A55);
     font-weight: 700;
@@ -141,6 +126,11 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+/* Copy Button extra */
+#copyButton {
+    margin-top: 10px;
+}
 </style>
 </head>
 <body>
@@ -150,6 +140,7 @@ footer a:hover {
     <input type="text" id="title" placeholder="Enter your video title (optional info in brackets)">
     <button id="generate">Generate Prompt</button>
     <textarea id="result" readonly placeholder="Generated prompt will appear here"></textarea>
+    <button id="copyButton">Copy Prompt</button>
     <footer>© 2025 <a href="https://squidmedia.co/" target="_blank">Squid Media</a></footer>
 </div>
 
@@ -184,8 +175,20 @@ function generatePrompt() {
     document.getElementById('result').value = promptText;
 }
 
+// Copy prompt function
+function copyPrompt() {
+    let resultArea = document.getElementById('result');
+    resultArea.select();
+    resultArea.setSelectionRange(0, 99999); // For mobile devices
+    document.execCommand('copy');
+    alert("Prompt copied to clipboard!");
+}
+
 // Generate on button click
 document.getElementById('generate').addEventListener('click', generatePrompt);
+
+// Copy on button click
+document.getElementById('copyButton').addEventListener('click', copyPrompt);
 
 // Generate on Enter key
 document.getElementById('title').addEventListener('keypress', function(e) {
