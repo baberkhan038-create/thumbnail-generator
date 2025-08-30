@@ -45,12 +45,12 @@ h1 {
 }
 h1 a {
     color: #ffffff;
-    text-decoration: none; /* remove underline */
+    text-decoration: none;
     display: inline-block;
     transition: transform 0.3s ease;
 }
 h1 a:hover {
-    transform: scale(1.1) rotate(-1deg); /* subtle animation */
+    transform: scale(1.1) rotate(-1deg);
 }
 
 h2 {
@@ -134,9 +134,6 @@ footer a:hover {
   display: inline-block;
   width: 60px;
   height: 28px;
-  margin-bottom: 14px;
-  margin-top: 5px;
-  vertical-align: middle;
 }
 .switch input { 
   opacity: 0;
@@ -174,12 +171,20 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-label {
+
+/* Align toggle and label horizontally */
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+}
+.toggle-container span {
   color: #FFD700;
   font-weight: 600;
-  font-size: 0.9rem;
-  margin-left: 10px;
-  cursor: pointer;
+  margin-right: 10px;
+  font-size: 1rem;
+  margin-top: 3px; /* Added to lower the label slightly */
 }
 </style>
 </head>
@@ -190,14 +195,14 @@ label {
     <input type="text" id="title" placeholder="Enter your video title (optional info in brackets)">
     <button id="generate">Generate Prompt</button>
     
-    <!-- Toggle switch for auto clothes line -->
-    <label class="switch">
-      <input type="checkbox" id="autoClothes">
-      <span class="slider round"></span>
-      Auto Add Clothes Line
-    </label>
-
-    <button id="changeClothes">Add Clothes Line Manually</button>
+    <!-- Toggle switch with label aligned horizontally and centered -->
+    <div class="toggle-container">
+      <span>Clothes</span>
+      <label class="switch">
+        <input type="checkbox" id="autoClothes">
+        <span class="slider round"></span>
+      </label>
+    </div>
     
     <textarea id="result" readonly placeholder="Generated prompt will appear here"></textarea>
     <button id="copyButton">Copy Prompt</button>
@@ -209,7 +214,6 @@ function generatePrompt() {
     let rawTitle = document.getElementById('title').value.trim();
     if (!rawTitle) return;
 
-    // Extract bracket content as Additional Information
     let bracketInfos = [];
     let bracketRegex = /\((.*?)\)/g;
     let match;
@@ -221,7 +225,6 @@ function generatePrompt() {
     let additionalInfoText = bracketInfos.length ? bracketInfos.join(", ") : "None";
     let elementsText = `Minimal but premium-looking icons/graphics automatically related to the topic "${titleCaps}"`;
 
-    // Formatted prompt with sections
     let promptText = `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n` +
                      `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n\n` +
                      `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n\n` +
@@ -232,12 +235,11 @@ function generatePrompt() {
                      `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n` +
                      `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
 
-    // Auto add clothes line if toggle is ON
     let autoClothes = document.getElementById('autoClothes').checked;
     if (autoClothes) {
         let subjectSection = promptText.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
         if (subjectSection) {
-            let newSubject = subjectSection[0] + "Change the clothes matching the theme or tone of the title.\n";
+            let newSubject = subjectSection[0] + "Change the clothes to match the theme of the title.\n";
             promptText = promptText.replace(subjectSection[0], newSubject);
         }
     }
@@ -245,11 +247,10 @@ function generatePrompt() {
     document.getElementById('result').value = promptText;
 }
 
-// Copy prompt function with button text change
 function copyPrompt() {
     let resultArea = document.getElementById('result');
     resultArea.select();
-    resultArea.setSelectionRange(0, 99999); // For mobile devices
+    resultArea.setSelectionRange(0, 99999);
     document.execCommand('copy');
 
     let copyBtn = document.getElementById('copyButton');
@@ -260,27 +261,8 @@ function copyPrompt() {
     }, 2000);
 }
 
-// Add "Change Subject Clothes" to SUBJECT section manually
-document.getElementById('changeClothes').addEventListener('click', function() {
-    let resultArea = document.getElementById('result');
-    let prompt = resultArea.value;
-    if (!prompt) return;
-
-    let subjectSection = prompt.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
-    if (subjectSection) {
-        let newSubject = subjectSection[0] + "Change the clothes matching the theme or tone of the title.\n";
-        prompt = prompt.replace(subjectSection[0], newSubject);
-        resultArea.value = prompt;
-    }
-});
-
-// Generate on button click
 document.getElementById('generate').addEventListener('click', generatePrompt);
-
-// Copy on button click
 document.getElementById('copyButton').addEventListener('click', copyPrompt);
-
-// Generate on Enter key
 document.getElementById('title').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
