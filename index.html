@@ -135,6 +135,7 @@ footer a:hover {
     <h2>Instagram Thumbnail Prompt Generator</h2>
     <input type="text" id="title" placeholder="Enter your video title (optional info in brackets)">
     <button id="generate">Generate Prompt</button>
+    <button id="changeClothes">Change Subject Clothes</button>
     <textarea id="result" readonly placeholder="Generated prompt will appear here"></textarea>
     <button id="copyButton">Copy Prompt</button>
     <footer>© 2025 <a href="https://squidmedia.co/" target="_blank">Squid Media</a></footer>
@@ -185,6 +186,21 @@ function copyPrompt() {
         copyBtn.textContent = "Copy Prompt";
     }, 2000);
 }
+
+// Add "Change Subject Clothes" to SUBJECT section
+document.getElementById('changeClothes').addEventListener('click', function() {
+    let resultArea = document.getElementById('result');
+    let prompt = resultArea.value;
+    if (!prompt) return; // do nothing if prompt not generated
+
+    // Add the line to SUBJECT section
+    let subjectSection = prompt.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
+    if (subjectSection) {
+        let newSubject = subjectSection[0] + "Change the clothes matching the theme or tone of the title.\n";
+        prompt = prompt.replace(subjectSection[0], newSubject);
+        resultArea.value = prompt;
+    }
+});
 
 // Generate on button click
 document.getElementById('generate').addEventListener('click', generatePrompt);
