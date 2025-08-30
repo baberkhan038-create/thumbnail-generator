@@ -94,6 +94,7 @@ button {
     color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
+    border-radius: 14px;
 }
 button:hover {
     background: linear-gradient(90deg, #FF1A55, #FF3366);
@@ -126,11 +127,6 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
-
-/* Copy Button extra */
-#copyButton {
-    margin-top: 10px;
-}
 </style>
 </head>
 <body>
@@ -161,7 +157,7 @@ function generatePrompt() {
     let additionalInfoText = bracketInfos.length ? bracketInfos.join(", ") : "None";
     let elementsText = `Minimal but premium-looking icons/graphics automatically related to the topic "${titleCaps}"`;
 
-    // Formatted prompt
+    // Formatted prompt with sections
     let promptText = `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n` +
                      `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n\n` +
                      `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n\n` +
@@ -175,13 +171,19 @@ function generatePrompt() {
     document.getElementById('result').value = promptText;
 }
 
-// Copy prompt function
+// Copy prompt function with button text change
 function copyPrompt() {
     let resultArea = document.getElementById('result');
     resultArea.select();
     resultArea.setSelectionRange(0, 99999); // For mobile devices
     document.execCommand('copy');
-    alert("Prompt copied to clipboard!");
+
+    let copyBtn = document.getElementById('copyButton');
+    copyBtn.textContent = "Copied";
+
+    setTimeout(() => {
+        copyBtn.textContent = "Copy Prompt";
+    }, 2000);
 }
 
 // Generate on button click
