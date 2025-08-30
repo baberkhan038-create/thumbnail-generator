@@ -127,6 +127,60 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+/* Toggle switch styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 28px;
+  margin-bottom: 14px;
+  margin-top: 5px;
+  vertical-align: middle;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 28px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #FF3366;
+}
+input:checked + .slider:before {
+  transform: translateX(32px);
+}
+.slider.round {
+  border-radius: 28px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+label {
+  color: #FFD700;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-left: 10px;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -135,7 +189,16 @@ footer a:hover {
     <h2>Instagram Thumbnail Prompt Generator</h2>
     <input type="text" id="title" placeholder="Enter your video title (optional info in brackets)">
     <button id="generate">Generate Prompt</button>
-    <button id="changeClothes">Change Subject Clothes</button>
+    
+    <!-- Toggle switch for auto clothes line -->
+    <label class="switch">
+      <input type="checkbox" id="autoClothes">
+      <span class="slider round"></span>
+      Auto Add Clothes Line
+    </label>
+
+    <button id="changeClothes">Add Clothes Line Manually</button>
+    
     <textarea id="result" readonly placeholder="Generated prompt will appear here"></textarea>
     <button id="copyButton">Copy Prompt</button>
     <footer>© 2025 <a href="https://squidmedia.co/" target="_blank">Squid Media</a></footer>
@@ -169,6 +232,16 @@ function generatePrompt() {
                      `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n` +
                      `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
 
+    // Auto add clothes line if toggle is ON
+    let autoClothes = document.getElementById('autoClothes').checked;
+    if (autoClothes) {
+        let subjectSection = promptText.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
+        if (subjectSection) {
+            let newSubject = subjectSection[0] + "Change the clothes matching the theme or tone of the title.\n";
+            promptText = promptText.replace(subjectSection[0], newSubject);
+        }
+    }
+
     document.getElementById('result').value = promptText;
 }
 
@@ -187,13 +260,12 @@ function copyPrompt() {
     }, 2000);
 }
 
-// Add "Change Subject Clothes" to SUBJECT section
+// Add "Change Subject Clothes" to SUBJECT section manually
 document.getElementById('changeClothes').addEventListener('click', function() {
     let resultArea = document.getElementById('result');
     let prompt = resultArea.value;
-    if (!prompt) return; // do nothing if prompt not generated
+    if (!prompt) return;
 
-    // Add the line to SUBJECT section
     let subjectSection = prompt.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
     if (subjectSection) {
         let newSubject = subjectSection[0] + "Change the clothes matching the theme or tone of the title.\n";
