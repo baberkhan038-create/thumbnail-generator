@@ -177,14 +177,14 @@ input:checked + .slider:before {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0px;
+  margin-bottom: 14px;
 }
 .toggle-container span {
   color: #FFD700;
   font-weight: 600;
   margin-right: 10px;
   font-size: 1rem;
-  margin-top: 3px; /* Added to lower the label slightly */
+  margin-top: 1px; /* Slightly lower */
 }
 </style>
 </head>
@@ -214,6 +214,7 @@ function generatePrompt() {
     let rawTitle = document.getElementById('title').value.trim();
     if (!rawTitle) return;
 
+    // Extract bracket content as Additional Information
     let bracketInfos = [];
     let bracketRegex = /\((.*?)\)/g;
     let match;
@@ -225,16 +226,26 @@ function generatePrompt() {
     let additionalInfoText = bracketInfos.length ? bracketInfos.join(", ") : "None";
     let elementsText = `Minimal but premium-looking icons/graphics automatically related to the topic "${titleCaps}"`;
 
+    // Formatted prompt with sections
     let promptText = `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n` +
                      `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n\n` +
-                     `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n\n` +
-                     `== ELEMENTS ==\n${elementsText}, arranged in the background (not covering the subject).\n\n` +
-                     `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n` +
-                     `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n` +
-                     `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, title directly above head, supportive elements in the background.\n\n` +
-                     `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n` +
-                     `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
+                     `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n`;
 
+    // Add line if additional info exists
+    if (bracketInfos.length) {
+        promptText += "Don't add any text from the additional information.\n\n";
+    } else {
+        promptText += "\n";
+    }
+
+    promptText += `== ELEMENTS ==\n${elementsText}, arranged in the background (not covering the subject).\n\n` +
+                  `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n` +
+                  `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n` +
+                  `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, title directly above head, supportive elements in the background.\n\n` +
+                  `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n` +
+                  `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
+
+    // Auto add clothes line if toggle is ON
     let autoClothes = document.getElementById('autoClothes').checked;
     if (autoClothes) {
         let subjectSection = promptText.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
@@ -247,6 +258,7 @@ function generatePrompt() {
     document.getElementById('result').value = promptText;
 }
 
+// Copy prompt function with button text change
 function copyPrompt() {
     let resultArea = document.getElementById('result');
     resultArea.select();
@@ -261,8 +273,13 @@ function copyPrompt() {
     }, 2000);
 }
 
+// Generate on button click
 document.getElementById('generate').addEventListener('click', generatePrompt);
+
+// Copy on button click
 document.getElementById('copyButton').addEventListener('click', copyPrompt);
+
+// Generate on Enter key
 document.getElementById('title').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
