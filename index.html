@@ -184,7 +184,7 @@ input:checked + .slider:before {
   font-weight: 600;
   margin-right: 10px;
   font-size: 1rem;
-  margin-top: 1px; /* Slightly lower */
+  margin-top: 1px;
 }
 </style>
 </head>
@@ -226,6 +226,11 @@ function generatePrompt() {
     let additionalInfoText = bracketInfos.length ? bracketInfos.join(", ") : "None";
     let elementsText = `Minimal but premium-looking icons/graphics automatically related to the topic "${titleCaps}"`;
 
+    // If bracket info exists, add at end of ELEMENTS section
+    if (bracketInfos.length) {
+        elementsText += `\nAdd some elements related to this: ${bracketInfos.join(", ")}`;
+    }
+
     // Formatted prompt with sections
     let promptText = `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n` +
                      `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n\n` +
@@ -238,7 +243,7 @@ function generatePrompt() {
         promptText += "\n";
     }
 
-    promptText += `== ELEMENTS ==\n${elementsText}, arranged in the background (not covering the subject).\n\n` +
+    promptText += `== ELEMENTS ==\n${elementsText}\n\n` +
                   `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n` +
                   `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n` +
                   `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, title directly above head, supportive elements in the background.\n\n` +
