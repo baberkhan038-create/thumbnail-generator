@@ -7,7 +7,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
-/* Body & Background */
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
@@ -19,7 +18,6 @@ body {
     color: #fff;
 }
 
-/* Glassmorphic container */
 .container {
     background: rgba(30, 20, 60, 0.85);
     backdrop-filter: blur(12px);
@@ -27,7 +25,7 @@ body {
     border-radius: 25px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     width: 90%;
-    max-width: 800px;
+    max-width: 900px;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -36,7 +34,6 @@ body {
     box-shadow: 0 25px 80px rgba(255,51,102,0.4);
 }
 
-/* Headings */
 h1 {
     font-size: 3rem;
     color: #ffffff;
@@ -59,8 +56,7 @@ h2 {
     margin-bottom: 30px;
 }
 
-/* Inputs and Buttons */
-input, textarea, button {
+input {
     width: 100%;
     padding: 16px 18px;
     margin: 14px 0;
@@ -69,23 +65,17 @@ input, textarea, button {
     font-size: 1rem;
     outline: none;
     box-sizing: border-box;
-    transition: all 0.3s ease;
-}
-
-/* Inputs and textarea styling */
-input, textarea {
     background-color: rgba(50, 35, 90, 0.85);
     color: #fff;
 }
-input::placeholder, textarea::placeholder {
+input::placeholder {
     color: #ccc;
 }
-input:focus, textarea:focus {
+input:focus {
     box-shadow: 0 0 12px #FF3366;
     border: 1px solid #FF3366;
 }
 
-/* Buttons */
 button {
     background: linear-gradient(90deg, #FF3366, #FF1A55);
     font-weight: 700;
@@ -95,6 +85,9 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
     border-radius: 14px;
+    padding: 14px 0;
+    margin: 10px 0;
+    width: 48%;
 }
 button:hover {
     background: linear-gradient(90deg, #FF1A55, #FF3366);
@@ -102,18 +95,26 @@ button:hover {
     box-shadow: 0 5px 15px rgba(255,51,102,0.5);
 }
 
-/* Textarea */
-textarea {
-    height: 450px;
-    resize: none;
-    font-family: 'Courier New', monospace;
-    white-space: pre-wrap;
-    background-color: rgba(40,25,80,0.85);
-    color: #fff;
-    font-size: 0.95rem;
+.button-row {
+    display: flex;
+    justify-content: space-between;
 }
 
-/* Footer */
+textarea {
+    width: 100%;
+    height: 450px;
+    resize: none;
+    padding: 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+    border-radius: 14px;
+    border: none;
+    background-color: rgba(40,25,80,0.85);
+    color: #fff;
+    margin-bottom: 14px;
+}
+
 footer {
     margin-top: 20px;
     font-size: 0.85rem;
@@ -128,12 +129,12 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Toggle switch styling */
 .switch {
   position: relative;
   display: inline-block;
   width: 60px;
   height: 28px;
+  margin-left: 10px;
 }
 .switch input { 
   opacity: 0;
@@ -172,7 +173,6 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-/* Align toggle and label horizontally */
 .toggle-container {
   display: flex;
   justify-content: center;
@@ -182,9 +182,8 @@ input:checked + .slider:before {
 .toggle-container span {
   color: #FFD700;
   font-weight: 600;
-  margin-right: 10px;
   font-size: 1rem;
-  margin-top: 1px;
+  margin-right: 10px;
 }
 </style>
 </head>
@@ -193,19 +192,40 @@ input:checked + .slider:before {
     <h1><a href="https://squidmedia.co/" target="_blank">Squid Media</a></h1>
     <h2>Instagram Thumbnail Prompt Generator</h2>
     <input type="text" id="title" placeholder="Enter your video title (optional info in brackets)">
-    <button id="generate">Generate Prompt</button>
-    
-    <!-- Toggle switch with label aligned horizontally and centered -->
-    <div class="toggle-container">
-      <span>Clothes</span>
-      <label class="switch">
-        <input type="checkbox" id="autoClothes">
-        <span class="slider round"></span>
-      </label>
+
+    <div style="display:flex; justify-content:center; gap:30px; margin-bottom:15px;">
+        <div class="toggle-container">
+            <span>Change Clothes</span>
+            <label class="switch">
+                <input type="checkbox" id="autoClothes">
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="toggle-container">
+            <span>Remove Text</span>
+            <label class="switch">
+                <input type="checkbox" id="removeText">
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="toggle-container">
+            <span>Raise Subject</span>
+            <label class="switch">
+                <input type="checkbox" id="raiseSubject">
+                <span class="slider round"></span>
+            </label>
+        </div>
     </div>
-    
+
+    <div class="button-row">
+        <button id="generate">Generate Prompt</button>
+        <button id="copyButton">Copy Prompt</button>
+    </div>
+
     <textarea id="result" readonly placeholder="Generated prompt will appear here"></textarea>
-    <button id="copyButton">Copy Prompt</button>
+
     <footer>© 2025 <a href="https://squidmedia.co/" target="_blank">Squid Media</a></footer>
 </div>
 
@@ -214,7 +234,6 @@ function generatePrompt() {
     let rawTitle = document.getElementById('title').value.trim();
     if (!rawTitle) return;
 
-    // Extract bracket content as Additional Information
     let bracketInfos = [];
     let bracketRegex = /\((.*?)\)/g;
     let match;
@@ -225,68 +244,80 @@ function generatePrompt() {
 
     let additionalInfoText = bracketInfos.length ? bracketInfos.join(", ") : "None";
     let elementsText = `Minimal but premium-looking icons/graphics automatically related to the topic "${titleCaps}"`;
-
-    // If bracket info exists, add at end of ELEMENTS section
     if (bracketInfos.length) {
         elementsText += `\nAdd some elements related to this: ${bracketInfos.join(", ")}`;
     }
 
-    // Formatted prompt with sections
-    let promptText = `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n` +
-                     `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n\n` +
-                     `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n`;
-
-    // Add line if additional info exists
-    if (bracketInfos.length) {
-        promptText += "Don't add any text from the additional information.\n\n";
-    } else {
-        promptText += "\n";
-    }
-
-    promptText += `== ELEMENTS ==\n${elementsText}\n\n` +
-                  `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n` +
-                  `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n` +
-                  `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, title directly above head, supportive elements in the background.\n\n` +
-                  `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n` +
-                  `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
-
-    // Auto add clothes line if toggle is ON
+    let removeText = document.getElementById('removeText').checked;
+    let raiseSubject = document.getElementById('raiseSubject').checked;
     let autoClothes = document.getElementById('autoClothes').checked;
-    if (autoClothes) {
-        let subjectSection = promptText.match(/== SUBJECT ==\n[\s\S]*?(?=\n==)/);
-        if (subjectSection) {
-            let newSubject = subjectSection[0] + "Change the clothes to match the theme of the title.\n";
-            promptText = promptText.replace(subjectSection[0], newSubject);
+
+    let promptText = "";
+
+    if(raiseSubject){
+        // Raise Subject version
+        promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
+        promptText += `== SUBJECT ==\nA person placed above the vertical center, sharp, confident pose, with a clearly visible face (do not place any text or elements on the face). Ensure the subject occupies the upper portion of the frame, leaving ample space below for text or graphics. The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
+        if(autoClothes){
+            promptText += " Change the clothes to match the theme of the topic.";
         }
+        promptText += `\n\n== ELEMENTS ==\n${elementsText}\n\n`;
+        promptText += `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n`;
+        promptText += `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n`;
+        promptText += `== COMPOSITION ==\nPoster-style — subject as hero, supportive elements in the background.\n\n`;
+        promptText += `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n`;
+        promptText += `== IMPORTANT ==\nEnsure that no text, topic, or lines appear anywhere in the image.`;
+    } else if(removeText){
+        // Remove Text ON version
+        promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
+        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
+        if(autoClothes){
+            promptText += " Change the clothes to match the theme of the topic.";
+        }
+        promptText += `\n\n== ELEMENTS ==\n${elementsText}\n\n`;
+        promptText += `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n`;
+        promptText += `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n`;
+        promptText += `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, supportive elements in the background.\n\n`;
+        promptText += `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n`;
+        promptText += `== IMPORTANT ==\nEnsure that no text, topic, or lines appear anywhere in the image.`;
+    } else {
+        // Normal version
+        promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
+        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n`;
+        if(autoClothes){
+            promptText += "Change the clothes to match the theme of the title.\n";
+        }
+        if(bracketInfos.length){
+            promptText += "Don't add any text from the additional information.\n\n";
+        } else {
+            promptText += "\n";
+        }
+        promptText += `== TITLE TEXT ==\nDisplay the title "${titleCaps}" in ALL CAPITAL LETTERS, in bold, stylish poster typography, positioned just above the subject’s head. The text style, font, colors, and effects should reflect the type, tone, and theme of the title "${titleCaps}".\n\n`;
+        promptText += `== ELEMENTS ==\n${elementsText}\n\n`;
+        promptText += `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n`;
+        promptText += `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n`;
+        promptText += `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, title directly above head, supportive elements in the background.\n\n`;
+        promptText += `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n`;
+        promptText += `== IMPORTANT ==\nEnsure the title is always rendered in FULL CAPITAL LETTERS regardless of how it is written.`;
     }
 
     document.getElementById('result').value = promptText;
 }
 
-// Copy prompt function with button text change
 function copyPrompt() {
     let resultArea = document.getElementById('result');
     resultArea.select();
     resultArea.setSelectionRange(0, 99999);
     document.execCommand('copy');
-
     let copyBtn = document.getElementById('copyButton');
     copyBtn.textContent = "Copied";
-
-    setTimeout(() => {
-        copyBtn.textContent = "Copy Prompt";
-    }, 2000);
+    setTimeout(() => { copyBtn.textContent = "Copy Prompt"; }, 2000);
 }
 
-// Generate on button click
 document.getElementById('generate').addEventListener('click', generatePrompt);
-
-// Copy on button click
 document.getElementById('copyButton').addEventListener('click', copyPrompt);
-
-// Generate on Enter key
-document.getElementById('title').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
+document.getElementById('title').addEventListener('keypress', function(e){
+    if(e.key === 'Enter'){
         e.preventDefault();
         generatePrompt();
     }
