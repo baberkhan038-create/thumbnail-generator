@@ -217,6 +217,14 @@ input:checked + .slider:before {
                 <span class="slider round"></span>
             </label>
         </div>
+
+        <div class="toggle-container">
+            <span>Poster</span>
+            <label class="switch">
+                <input type="checkbox" id="posterMode">
+                <span class="slider round"></span>
+            </label>
+        </div>
     </div>
 
     <div class="button-row">
@@ -251,15 +259,40 @@ function generatePrompt() {
     let removeText = document.getElementById('removeText').checked;
     let raiseSubject = document.getElementById('raiseSubject').checked;
     let autoClothes = document.getElementById('autoClothes').checked;
+    let posterMode = document.getElementById('posterMode').checked;
+
+    // Poster & RemoveText linked
+    if (posterMode) document.getElementById('removeText').checked = true;
+    if (!document.getElementById('removeText').checked) document.getElementById('posterMode').checked = false;
+
+    removeText = document.getElementById('removeText').checked;
+    posterMode = document.getElementById('posterMode').checked;
+
+    let faceLine = removeText ? "(do not place any elements on the face)." : "(do not place any text or elements on the face).";
 
     let promptText = "";
 
-    if(raiseSubject){
-        // Raise Subject version
-        promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
-        promptText += `== SUBJECT ==\nA person placed above the vertical center, sharp, confident pose, with a clearly visible face (do not place any text or elements on the face). Ensure the subject occupies the upper portion of the frame, leaving ample space below for text or graphics. The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
+    if(posterMode){
+        promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals that match the topic).\n\n`;
+        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face ${faceLine} The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
         if(autoClothes){
             promptText += " Change the clothes to match the theme of the topic.";
+        } else {
+            promptText += " Wears same clothes";
+        }
+        promptText += `\n\n== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n`;
+        promptText += `== STYLE ==\nEye-catching, professional, cinematic like a movie poster. Use vibrant contrast, clean layout, and premium color grading.\n\n`;
+        promptText += `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, supportive background.\n\n`;
+        promptText += `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n`;
+        promptText += `== IMPORTANT ==\nEnsure that no text, topic, or lines appear anywhere in the image.`;
+
+    } else if(raiseSubject){
+        promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
+        promptText += `== SUBJECT ==\nA person placed above the vertical center, sharp, confident pose, with a clearly visible face ${faceLine} Ensure the subject occupies the upper portion of the frame, leaving ample space below for text or graphics. The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
+        if(autoClothes){
+            promptText += " Change the clothes to match the theme of the topic.";
+        } else {
+            promptText += " Wears same clothes";
         }
         promptText += `\n\n== ELEMENTS ==\n${elementsText}\n\n`;
         promptText += `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n`;
@@ -267,12 +300,14 @@ function generatePrompt() {
         promptText += `== COMPOSITION ==\nPoster-style — subject as hero, supportive elements in the background.\n\n`;
         promptText += `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n`;
         promptText += `== IMPORTANT ==\nEnsure that no text, topic, or lines appear anywhere in the image.`;
+
     } else if(removeText){
-        // Remove Text ON version
         promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
-        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
+        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face ${faceLine} The subject’s facial expressions and hand gestures should match the theme or tone of the topic "${titleCaps}".`;
         if(autoClothes){
             promptText += " Change the clothes to match the theme of the topic.";
+        } else {
+            promptText += " Wears same clothes";
         }
         promptText += `\n\n== ELEMENTS ==\n${elementsText}\n\n`;
         promptText += `== ADDITIONAL INFORMATION ==\n${additionalInfoText}\n\n`;
@@ -280,12 +315,14 @@ function generatePrompt() {
         promptText += `== COMPOSITION ==\nPoster-style — subject as hero slightly below center, supportive elements in the background.\n\n`;
         promptText += `== FORMAT ==\nOptimized for Instagram size and engagement.\n\n`;
         promptText += `== IMPORTANT ==\nEnsure that no text, topic, or lines appear anywhere in the image.`;
+
     } else {
-        // Normal version
         promptText += `== BACKGROUND ==\nCinematic, high-quality background related to the topic "${titleCaps}" (use visuals/elements that match the topic).\n\n`;
-        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face (do not place any text or elements on the face). The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n`;
+        promptText += `== SUBJECT ==\nA person placed slightly below the vertical center, sharp, well-lit, confident pose, with a clear visible face ${faceLine} The subject’s facial expressions and hand gestures should match the theme or tone of the title "${titleCaps}".\n`;
         if(autoClothes){
             promptText += "Change the clothes to match the theme of the title.\n";
+        } else {
+            promptText += "Wears same clothes.\n";
         }
         if(bracketInfos.length){
             promptText += "Don't add any text from the additional information.\n\n";
